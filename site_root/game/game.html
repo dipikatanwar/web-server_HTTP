@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>Chat - Customer Module</title>
+</head>
+ <style>
+ body {
+    font:12px arial;
+    color: #222;
+    text-align:center;
+    padding:35px; }
+  
+form, p, span {
+    margin:0;
+    padding:0; }
+  
+input { font:12px arial; }
+  
+a {
+    color:#0000FF;
+    text-decoration:none; }
+  
+    a:hover { text-decoration:underline; }
+  
+#wrapper, #loginform {
+    margin:0 auto;
+    padding-bottom:25px;
+    background:#EBF4FB;
+    width:504px;
+    border:1px solid #ACD8F0; }
+  
+#loginform { padding-top:18px; }
+  
+    #loginform p { margin: 5px; }
+  
+#chatbox {
+    text-align:left;
+    margin:0 auto;
+    margin-bottom:25px;
+    padding:10px;
+    background:#fff;
+    height:100px;
+    width:330px;
+    border:1px solid #ACD8F0;
+    overflow:auto; }
+  
+#usermsg {
+    width:395px;
+    border:1px solid #ACD8F0; }
+  
+#submit { width: 60px; }
+  
+.error { color: #ff0000; }
+  
+#menu { padding:12.5px 25px 12.5px 25px; }
+  
+.welcome { float:left; }
+  
+.logout { float:right; }
+  
+.msgln { margin:0 0 2px 0; }
+ </style>
+ 
+<div id="wrapper" bgcolor="gray">
+    <div id="menu">
+        <p class="welcome">COL 701 Chat Game<b></b></p>
+        <p class="logout"><a id="exit" href="#", onclick="newGameSession()">Start New Game</a></p>
+        <p class=""><a id="join" href="#", onclick="joinGame()">Join</a></p>
+        <div style="clear:both"></div>
+    </div>
+
+    <h1 id="chatbox"></h1>
+     
+    <form name="message" action="" onsubmit="return false">
+        <input name="usermsg" type="text" id="usermsg" size="63" />
+        <input name="submitmsg" type="submit"  id="submitmsg" value="Update" onclick="fun()" />
+    <form>
+</div>
+
+<script type="text/javascript">
+
+var person = '';
+setInterval(fetchChat, 500);
+
+function fetchChat()
+{   
+    if(person==='') return;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("chatbox").innerText = this.responseText;
+    }
+  };
+  xhttp.open("GET", "http://localhost:8888/game/logs.txt", true);
+  xhttp.send();
+}
+
+
+function fun() { 
+  if(person==='') 
+  {
+      alert("First Join in the Game");
+      document.getElementById("usermsg").value = "";
+      return;
+  }
+  var currNumber = document.getElementById("usermsg").value;
+  if (isNaN(currNumber) || currNumber=='')
+  {
+    alert("Must input numbers");return;
+  }
+
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+     document.getElementById("chatbox").innerText = this.responseText;
+	 console.log(this.responseText);
+    }
+  };
+  xhttp.open("POST", "http://localhost:8888/game/logs.txt", true);
+  xhttp.send(person + ' Updated: ' + currNumber);
+  document.getElementById("usermsg").value = "";
+}
+
+
+function joinGame()
+{
+    if(person != '') return;
+    person = prompt("Please enter your name", "");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("chatbox").innerText = this.responseText;
+    }
+  };
+  xhttp.open("GET", "http://localhost:8888/game/logs.txt", true);
+  xhttp.send();
+  document.getElementById("usermsg").value = "";
+}
+
+function newGameSession()
+{
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	 console.log(this.responseText);
+    }
+  };
+  xhttp.open("HEAD", "http://localhost:8888/game/logs.txt", true);
+  xhttp.send();
+  document.getElementById("usermsg").value = "";
+
+}
+
+</script>
+</body>
+</html>
